@@ -95,12 +95,9 @@
     [picker setToRecipients:toRecipients];
     
     NSString *error;
-    NSData *data = [NSPropertyListSerialization dataFromPropertyList:crash 
-                                                              format:NSPropertyListBinaryFormat_v1_0 
-                                                    errorDescription:&error];
-    [picker addAttachmentData:data mimeType:@"text/plain" fileName:@"CrashReport"];
+	[picker addAttachmentData:[[NSString stringWithFormat:@"%@", crash] dataUsingEncoding:NSUTF8StringEncoding] mimeType:@"text/plain" fileName:@"CrashReport"];
+	[picker setMessageBody:@"(You can add additional details here, describing what you were doing when this happened. This can help to narrow down the issue.)" isHTML:NO];
     
-    NSLog(@"ViewController: %@", self.rootViewController.title);
     [self.rootViewController presentModalViewController:picker animated:YES];
     [picker release];
     
@@ -109,6 +106,12 @@
   else
   {
     NSLog(@"Can Not Send Email");
+
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No Email Account Set up" message:@"Emailing crash reports will only work if you have set up an email account" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+	[alert show];
+	[alert release];
+
+    [self pumpRunLoop];
   }
 }
 
